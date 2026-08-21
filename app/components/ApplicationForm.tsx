@@ -3,8 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import { fbqTrack } from '@/lib/pixel';
 
-const BOT_USERNAME =
-  process.env.NEXT_PUBLIC_BOT_USERNAME || 'applyyourjobhere_bot';
+const BOT_USERNAME = 'applyyourjobhere_bot';
 
 const COUNTRIES = [
   { iso: 'de', name: 'Deutschland', dial: '+49' },
