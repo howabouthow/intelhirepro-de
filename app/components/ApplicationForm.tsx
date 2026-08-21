@@ -7,28 +7,28 @@ const BOT_USERNAME =
   process.env.NEXT_PUBLIC_BOT_USERNAME || 'applyyourjobhere_bot';
 
 const COUNTRIES = [
-  { iso: 'in', name: 'India', dial: '+91' },
-  { iso: 'pl', name: 'Poland', dial: '+48' },
-  { iso: 'tr', name: 'Turkey', dial: '+90' },
-  { iso: 'sy', name: 'Syria', dial: '+963' },
-  { iso: 'us', name: 'USA/Canada', dial: '+1' },
+  { iso: 'de', name: 'Deutschland', dial: '+49' },
+  { iso: 'in', name: 'Indien', dial: '+91' },
+  { iso: 'pl', name: 'Polen', dial: '+48' },
+  { iso: 'tr', name: 'Türkei', dial: '+90' },
+  { iso: 'sy', name: 'Syrien', dial: '+963' },
+  { iso: 'us', name: 'USA/Kanada', dial: '+1' },
   { iso: 'my', name: 'Malaysia', dial: '+60' },
-  { iso: 'id', name: 'Indonesia', dial: '+62' },
-  { iso: 'ph', name: 'Philippines', dial: '+63' },
+  { iso: 'id', name: 'Indonesien', dial: '+62' },
+  { iso: 'ph', name: 'Philippinen', dial: '+63' },
   { iso: 'vn', name: 'Vietnam', dial: '+84' },
   { iso: 'th', name: 'Thailand', dial: '+66' },
   { iso: 'mm', name: 'Myanmar', dial: '+95' },
-  { iso: 'bd', name: 'Bangladesh', dial: '+880' },
+  { iso: 'bd', name: 'Bangladesch', dial: '+880' },
   { iso: 'pk', name: 'Pakistan', dial: '+92' },
   { iso: 'np', name: 'Nepal', dial: '+977' },
   { iso: 'lk', name: 'Sri Lanka', dial: '+94' },
-  { iso: 'au', name: 'Australia', dial: '+61' },
-  { iso: 'za', name: 'South Africa', dial: '+27' },
-  { iso: 'de', name: 'Germany', dial: '+49' },
-  { iso: 'fr', name: 'France', dial: '+33' },
-  { iso: 'gb', name: 'United Kingdom', dial: '+44' },
-  { iso: 'ae', name: 'United Arab Emirates', dial: '+971' },
-  { iso: 'sg', name: 'Singapore', dial: '+65' },
+  { iso: 'au', name: 'Australien', dial: '+61' },
+  { iso: 'za', name: 'Südafrika', dial: '+27' },
+  { iso: 'fr', name: 'Frankreich', dial: '+33' },
+  { iso: 'gb', name: 'Vereinigtes Königreich', dial: '+44' },
+  { iso: 'ae', name: 'Vereinigte Arabische Emirate', dial: '+971' },
+  { iso: 'sg', name: 'Singapur', dial: '+65' },
 ];
 
 const isMobile = () =>
@@ -132,15 +132,19 @@ export default function ApplicationForm() {
     const ageNum = Number(age || '0');
 
     if (!name.trim()) {
-      return setError('Please enter your name.');
+      return setError('Bitte gib deinen Namen ein.');
     }
 
     if (!phoneE164) {
-      return setError('Please enter the phone number you use on Telegram.');
+      return setError(
+        'Bitte gib die Telefonnummer ein, die du bei Telegram verwendest.'
+      );
     }
 
     if (!ageNum || ageNum < 18 || ageNum > 99) {
-      return setError('Please enter a valid age. Age range: 18–99.');
+      return setError(
+        'Bitte gib ein gültiges Alter ein. Altersbereich: 18–99.'
+      );
     }
 
     const payload = {
@@ -171,7 +175,9 @@ export default function ApplicationForm() {
         .catch(() => null)) as LeadApiResponse | null;
 
       if (!response.ok || !data?.ok) {
-        throw new Error(data?.error || 'Unable to submit your application.');
+        throw new Error(
+          data?.error || 'Die Bewerbung konnte nicht gesendet werden.'
+        );
       }
 
       if (data.isNew === true) {
@@ -180,16 +186,18 @@ export default function ApplicationForm() {
             action: 'unique_phone_submit',
           });
         } catch {
-          // Continue even if the Meta Pixel event cannot be sent.
+          // Der Nutzer kann fortfahren, auch wenn das Meta-Pixel-Event nicht gesendet werden kann.
         }
       }
 
-      setOkMsg('Application submitted! Opening Telegram…');
+      setOkMsg('Bewerbung gesendet! Telegram wird geöffnet…');
       setSaving(false);
       openTelegram();
     } catch {
       setSaving(false);
-      setError('Unable to submit your application. Please try again.');
+      setError(
+        'Die Bewerbung konnte nicht gesendet werden. Bitte versuche es erneut.'
+      );
     }
   };
 
@@ -197,8 +205,8 @@ export default function ApplicationForm() {
     <form onSubmit={handleSubmit} className="mt-6">
       <div className="p-6 md:p-8 rounded-2xl border border-slate-200 bg-white shadow-sm">
         <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
-          Our recruitment team will contact applicants through Telegram.
-          Please enter the phone number you use on Telegram.
+          Unser Recruiting-Team kontaktiert Bewerber über Telegram. Bitte gib
+          die Telefonnummer ein, die du bei Telegram verwendest.
         </p>
 
         <label className="block text-sm font-medium text-slate-700 mt-2">
@@ -207,14 +215,14 @@ export default function ApplicationForm() {
 
         <input
           type="text"
-          placeholder="Enter your name"
+          placeholder="Gib deinen Namen ein"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="mt-2 w-full h-12 rounded-xl border border-slate-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-100"
         />
 
         <label className="block text-sm font-medium text-slate-700 mt-6">
-          * Telegram Phone Number
+          * Telegram-Telefonnummer
         </label>
 
         <div className="mt-2 grid grid-cols-10 gap-3">
@@ -239,7 +247,7 @@ export default function ApplicationForm() {
           <input
             type="tel"
             inputMode="numeric"
-            placeholder="Enter phone number"
+            placeholder="Telefonnummer eingeben"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             className="col-span-7 h-12 rounded-xl border border-slate-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-100"
@@ -247,12 +255,12 @@ export default function ApplicationForm() {
         </div>
 
         <p className="mt-1 text-xs text-slate-500">
-          This number will be verified on Telegram:&nbsp;
+          Diese Nummer wird bei Telegram überprüft:&nbsp;
           <strong>{phoneE164 || '—'}</strong>
         </p>
 
         <label className="block text-sm font-medium text-slate-700 mt-6">
-          * Gender
+          * Geschlecht
         </label>
 
         <div className="mt-2 flex items-center gap-6">
@@ -263,7 +271,7 @@ export default function ApplicationForm() {
               checked={gender === 'male'}
               onChange={() => setGender('male')}
             />
-            <span>Male</span>
+            <span>Männlich</span>
           </label>
 
           <label className="inline-flex items-center gap-2">
@@ -273,19 +281,19 @@ export default function ApplicationForm() {
               checked={gender === 'female'}
               onChange={() => setGender('female')}
             />
-            <span>Female</span>
+            <span>Weiblich</span>
           </label>
         </div>
 
         <label className="block text-sm font-medium text-slate-700 mt-6">
-          * Age
+          * Alter
         </label>
 
         <input
           type="number"
           min={18}
           max={99}
-          placeholder="Enter your age"
+          placeholder="Gib dein Alter ein"
           value={age}
           onChange={(e) => setAge(e.target.value)}
           className="mt-2 w-full h-12 rounded-xl border border-slate-300 px-3 focus:outline-none focus:ring-4 focus:ring-blue-100"
@@ -296,7 +304,7 @@ export default function ApplicationForm() {
           disabled={saving}
           className="mt-8 inline-flex items-center justify-center rounded-xl bg-blue-600 text-white px-6 h-12 hover:bg-blue-700 disabled:opacity-60"
         >
-          {saving ? 'Submitting…' : 'Submit'}
+          {saving ? 'Wird gesendet…' : 'Bewerbung senden'}
         </button>
 
         {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
