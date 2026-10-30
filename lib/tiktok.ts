@@ -3,10 +3,7 @@ export const TIKTOK_PIXEL_ID = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
 
 declare global {
   interface Window {
-    ttq?: {
-      track?: (event: string, params?: Record<string, unknown>) => void;
-      page?: () => void;
-    };
+    ttq?: any;
   }
 }
 
