@@ -1,24 +1,28 @@
 "use client";
 
 import Script from "next/script";
+import { usePathname } from "next/navigation";
+import { getPixelIdForPath } from "@/lib/landing-config";
 
 declare global {
   interface Window {
     fbq?: (...args: any[]) => void;
     _fbq?: unknown;
-    __hireproMetaInitialized?: boolean;
-    __hireproPageViewSent?: boolean;
+    __hireproMetaPixelsInitialized?: Record<string, boolean>;
+    __hireproPageViewsSent?: Record<string, boolean>;
   }
 }
 
 export default function MetaPixel() {
-  const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  const pathname = usePathname() || "/";
+  const pixelId = getPixelIdForPath(pathname);
+  const pageViewKey = `${pixelId}:${pathname}`;
 
-  if (!PIXEL_ID) return null;
+  if (!pixelId) return null;
 
   return (
     <Script
-      id="meta-pixel-base"
+      id={`meta-pixel-${pixelId}-${pathname.replace(/[^a-zA-Z0-9]/g, "-")}`}
       strategy="afterInteractive"
       dangerouslySetInnerHTML={{
         __html: `
@@ -34,14 +38,17 @@ export default function MetaPixel() {
               'https://connect.facebook.net/en_US/fbevents.js');
             }
 
-            if (!window.__hireproMetaInitialized) {
-              fbq('init', '${PIXEL_ID}');
-              window.__hireproMetaInitialized = true;
+            window.__hireproMetaPixelsInitialized = window.__hireproMetaPixelsInitialized || {};
+            window.__hireproPageViewsSent = window.__hireproPageViewsSent || {};
+
+            if (!window.__hireproMetaPixelsInitialized['${pixelId}']) {
+              fbq('init', '${pixelId}');
+              window.__hireproMetaPixelsInitialized['${pixelId}'] = true;
             }
 
-            if (!window.__hireproPageViewSent) {
-              fbq('track', 'PageView');
-              window.__hireproPageViewSent = true;
+            if (!window.__hireproPageViewsSent['${pageViewKey}']) {
+              fbq('trackSingle', '${pixelId}', 'PageView');
+              window.__hireproPageViewsSent['${pageViewKey}'] = true;
             }
           })();
         `,

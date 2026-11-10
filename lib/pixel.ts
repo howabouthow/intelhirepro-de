@@ -1,7 +1,7 @@
-// lib/pixel.ts
+import { getPixelIdForPath } from "@/lib/landing-config";
+
 export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
-// Do NOT initialize fbq here. This file only tracks events.
 declare global {
   interface Window {
     fbq?: (...args: any[]) => void;
@@ -10,5 +10,9 @@ declare global {
 
 export function fbqTrack(event: string, params?: Record<string, any>) {
   if (typeof window === "undefined" || !window.fbq) return;
-  try { window.fbq("track", event, params); } catch {}
+  const pixelId = getPixelIdForPath(window.location.pathname);
+  if (!pixelId) return;
+  try {
+    window.fbq("trackSingle", pixelId, event, params);
+  } catch {}
 }
